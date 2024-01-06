@@ -1,0 +1,7 @@
+beautifulsoup4==4.10.0
+matplotlib==3.4.3
+pillow==8.4.0
+requests==2.26.0
+streamlit==1.15.0
+streamlit-card==0.0.2
+streamlit-extras==0.0.3
