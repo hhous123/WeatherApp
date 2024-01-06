@@ -1,3 +1,4 @@
+pip install streamlit_extras.metric_cards
 import streamlit as st
 from streamlit_extras.metric_cards import style_metric_cards
 from streamlit_extras.let_it_rain import rain
