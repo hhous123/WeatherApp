@@ -1,23 +1,15 @@
-import subprocess
-subprocess.run(["pip", "install", "streamlit_extras"])
 import streamlit as st
-from streamlit_extras.metric_cards import style_metric_cards
-from streamlit_extras.let_it_rain import rain
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 import matplotlib.pyplot as plt
-from streamlit_extras.image_in_tables import table_with_images
 from PIL import Image
-from streamlit_extras.colored_header import colored_header
-import streamlit as st
 from streamlit_card import card
 from datetime import datetime
 
-
 image = Image.open(r"C:\Users\Houssam\OneDrive\Bureau\Cloud Computing\cloud\logo.PNG")
 new_image = image.resize((200, 50))
-left_co, cent_co,last_co = st.columns(3)
+left_co, cent_co, last_co = st.columns(3)
 with cent_co:
     st.image(new_image)
 st.write("")
@@ -32,42 +24,62 @@ st.markdown(
 
 # Appel de la fonction colored_header avec un peu d'espace entre les deux
 st.write("")  # Ajout d'un espace vide
-colored_header(
-    label="Soleil, pluie ou nuages, MétéoMaghreb vous dit tout 😉!!!",
-    description="",
-    color_name="blue-80",
+st.markdown(
+    """
+    <style>
+        .colored-header {
+            background-color: #26619c;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 18px;
+        }
+    </style>
+    """
+)
+st.markdown(
+    '<div class="colored-header">'
+    "<p>Soleil, pluie ou nuages, MétéoMaghreb vous dit tout 😉!!!</p>"
+    '</div>',
+    unsafe_allow_html=True,
 )
 
-activities = ["Agadir","Al Hoceima","Benguerir","Beni Mellal","Al Hoceima","Casablanca","Kenitra","Meknes","Rabat","Zagora"]
+activities = ["Agadir", "Al Hoceima", "Benguerir", "Beni Mellal", "Al Hoceima", "Casablanca", "Kenitra", "Meknes", "Rabat",
+              "Zagora"]
 capitalized_activities = [activity.title() for activity in activities]
 st.sidebar.markdown("# Sélectionnez une ville")
 choice = st.sidebar.selectbox("choisir parmi les options proposées:", capitalized_activities)
-URL=['https://www.meteomaroc.com/meteo/agadir']
 URLs = ['https://www.meteomaroc.com/meteo/' + city for city in activities]
-job1=[]
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36", "Accept-Encoding":"gzip, deflate", "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "DNT":"1","Connection":"close", "Upgrade-Insecure-Requests":"1"}
+job1 = []
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 "
+                  "Safari/537.36", "Accept-Encoding": "gzip, deflate", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "DNT": "1", "Connection": "close", "Upgrade-Insecure-Requests": "1"}
 for url in range(len(URLs)):
-    req = requests.get(URLs[url],headers=HEADERS)
+    req = requests.get(URLs[url], headers=HEADERS)
     soup = BeautifulSoup(req.text, 'html.parser')
-    e=soup.find_all(class_='observation_c')
-    titlee=[]
+    e = soup.find_all(class_='observation_c')
+    titlee = []
     for i in range(len(e)):
-      titlee.append(e[i].get_text())
+        titlee.append(e[i].get_text())
     for i in range(len(titlee)):
-      job1.append(titlee[i])
-job5=[]
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36", "Accept-Encoding":"gzip, deflate", "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "DNT":"1","Connection":"close", "Upgrade-Insecure-Requests":"1"}
+        job1.append(titlee[i])
+job5 = []
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 "
+                  "Safari/537.36", "Accept-Encoding": "gzip, deflate", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "DNT": "1", "Connection": "close", "Upgrade-Insecure-Requests": "1"}
 for url in range(len(URLs)):
-    req = requests.get(URLs[url],headers=HEADERS)
+    req = requests.get(URLs[url], headers=HEADERS)
     soup = BeautifulSoup(req.text, 'html.parser')
-    e=soup.find_all(class_='current_condition')
-    titlee=[]
+    e = soup.find_all(class_='current_condition')
+    titlee = []
     for i in range(len(e)):
-      titlee.append(e[i].get_text())
+        titlee.append(e[i].get_text())
     for i in range(len(titlee)):
-      job5.append(titlee[i])
+        job5.append(titlee[i])
 cleaned_data = []
-
 
 for entry in job5:
     # Nettoie la chaîne en supprimant les caractères indésirables
@@ -80,12 +92,12 @@ aujourd_hui = datetime.now()
 # Formater la date en texte
 texte_date = aujourd_hui.strftime("%A %d %B %Y")
 for i in range(len(capitalized_activities)):
-    if choice==capitalized_activities[i]:
+    if choice == capitalized_activities[i]:
         # Utiliser la chaîne de texte directement comme titre dans la carte
         card(
             title=["☀️", "   ", capitalized_activities[i], "   ", job1[i], "C"],
             text=[" ", " ", "📅" + texte_date, "🌧️" + cleaned_data[i][:6], '💨' + cleaned_data[i][14:21],
-                "🌡️ " + cleaned_data[i][25:32]],
+                  "🌡️ " + cleaned_data[i][25:32]],
             image="",
             styles={
                 "card": {
@@ -107,64 +119,34 @@ for i in range(len(capitalized_activities)):
                 },
             }
         )
-job6=[]
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36", "Accept-Encoding":"gzip, deflate", "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "DNT":"1","Connection":"close", "Upgrade-Insecure-Requests":"1"}
+job6 = []
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 "
+                  "Safari/537.36", "Accept-Encoding": "gzip, deflate", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "DNT": "1", "Connection": "close", "Upgrade-Insecure-Requests": "1"}
 for url in range(len(URLs)):
-    req = requests.get(URLs[url],headers=HEADERS)
+    req = requests.get(URLs[url], headers=HEADERS)
     soup = BeautifulSoup(req.text, 'html.parser')
-    e=soup.find_all(class_='prevision-accieul')
-    titlee=[]
+    e = soup.find_all(class_='prevision-accieul')
+    titlee = []
     for i in range(len(e)):
-      titlee.append(e[i].get_text())
+        titlee.append(e[i].get_text())
     for i in range(len(titlee)):
-      job6.append(titlee[i])
+        job6.append(titlee[i])
 
-st.header(':blue[Prévision de la météo]',divider='orange')
+st.header(':blue[Prévision de la météo]', divider='orange')
 st.write("")
 st.write("")
-def style_metric_cards():
-    st.markdown(
-        """
-        <style>
-            .weather-card {
-                background-color: #f4f4f4;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                margin-bottom: 20px;
-                text-align: center;
-            }
-            .weather-icon {
-                font-size: 48px;
-            }
-            .metric-label {
-                font-size: 24px;
-                font-weight: bold;
-                color: #26619c;
-            }
-            .metric-value {
-                font-size: 36px;
-                font-weight: bold;
-                color: #333;
-            }
-            .metric-delta {
-                font-size: 20px;
-                color: #4caf50;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+date1 = job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[1][49:58]
+date2 = job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[2][49:58]
+date3 = job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[3][49:58]
+pluie1 = job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[1][89:93]
+pluie2 = job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[2][89:93]
+pluie3 = job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[3][89:93]
+degre1 = job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[1][71:78]
+degre2 = job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[2][71:78]
+degre3 = job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[3][71:78]
 
-date1=job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[1][49:58]
-date2=job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[2][49:58]
-date3=job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[3][49:58]
-pluie1=job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[1][89:93]
-pluie2=job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[2][89:93]
-pluie3=job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[3][89:93]
-degre1=job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[1][71:78]
-degre2=job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[2][71:78]
-degre3=job6[0].split('\t\t\t\t\n\n\t\t\t\t\t')[3][71:78]
 
 def generate_weather_emoji(rain_mm, temperature_celsius):
     emoji = ""
@@ -181,9 +163,11 @@ def generate_weather_emoji(rain_mm, temperature_celsius):
         emoji += "❄️"  # Température froide
     else:
         emoji += "🔥"  # Température chaude
-# Température modérée
+    # Température modérée
 
     return emoji
+
+
 # Créer les colonnes et les cartes de métriques
 col1, col2, col3 = st.columns(3)
 
@@ -194,7 +178,7 @@ with col1:
         '<div class="metric-label">{}</div>'
         '<div class="metric-value">{}</div>'
         '<div class="metric-delta">{}</div>'
-        '</div>'.format(date1,degre1,pluie1),
+        '</div>'.format(date1, degre1, pluie1),
         unsafe_allow_html=True,
     )
 
@@ -205,7 +189,7 @@ with col2:
         '<div class="metric-label">{}</div>'
         '<div class="metric-value">{}</div>'
         '<div class="metric-delta">{}</div>'
-        '</div>'.format(date2,degre2,pluie2),
+        '</div>'.format(date2, degre2, pluie2),
         unsafe_allow_html=True,
     )
 
@@ -216,13 +200,9 @@ with col3:
         '<div class="metric-label">{}</div>'
         '<div class="metric-value">{}</div>'
         '<div class="metric-delta">{}</div>'
-        '</div>'.format(date3,degre3,pluie3),
+        '</div>'.format(date3, degre3, pluie3),
         unsafe_allow_html=True,
     )
-
-
-# Appliquer le style
-style_metric_cards()
 
 st.write(" ")
 st.write(" ")
